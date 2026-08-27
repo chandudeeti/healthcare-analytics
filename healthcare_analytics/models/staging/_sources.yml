@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: raw
+    database: healthcare_analytics
+    schema: raw
+    tables:
+      - name: patients
+      - name: encounters
+      - name: conditions
+      - name: allergies
+      - name: immunizations
+      - name: careplans
+      - name: procedures
+      - name: devices
+      - name: imaging_studies
+      - name: supplies
+      - name: medications
+      - name: observations
+      - name: organizations
+      - name: providers
+      - name: payers
+      - name: payer_transitions

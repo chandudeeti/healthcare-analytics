@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: stg_patients
+    description: "One row per patient, cleaned and renamed from raw Synthea data."
+    columns:
+      - name: patient_id
+        description: "Primary key for patients."
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_encounters
+    description: "One row per healthcare encounter."
+    columns:
+      - name: encounter_id
+        description: "Primary key for encounters."
+        tests:
+          - unique
+          - not_null
+      - name: patient_id
+        description: "Foreign key to stg_patients."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_patients')
+              field: patient_id
+
+  - name: stg_conditions
+    description: "One row per diagnosed condition per patient/encounter."
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+      - name: encounter_id
+        tests:
+          - not_null
+
+  - name: stg_medications
+    description: "One row per medication prescribed per patient/encounter."
+    columns:
+      - name: patient_id
+        tests:
+          - not_null
+
+  - name: stg_organizations
+    description: "One row per healthcare organization/facility."
+    columns:
+      - name: organization_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_providers
+    description: "One row per individual healthcare provider."
+    columns:
+      - name: provider_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_payers
+    description: "One row per insurance payer."
+    columns:
+      - name: payer_id
+        tests:
+          - unique
+          - not_null

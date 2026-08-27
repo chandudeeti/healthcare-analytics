@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: int_patient_encounters
+    description: "One row per encounter, enriched with patient context."
+    columns:
+      - name: encounter_id
+        tests:
+          - unique
+          - not_null
+      - name: patient_id
+        tests:
+          - not_null
+
+  - name: int_covid_patients
+    description: "One row per patient with a COVID-related diagnosis (confirmed or suspected)."
+    columns:
+      - name: patient_id
+        tests:
+          - unique
+          - not_null
+      - name: covid_status
+        tests:
+          - accepted_values:
+              values: ['confirmed', 'suspected']
+
+  - name: int_patient_chronic_conditions
+    description: "One row per patient, chronic condition flags and risk stratification."
+    columns:
+      - name: patient_id
+        tests:
+          - unique
+          - not_null
+
+  - name: int_encounter_vitals
+    description: "One row per encounter, key vitals pivoted wide."
+    columns:
+      - name: encounter_id
+        tests:
+          - unique
+          - not_null
+
+  - name: int_covid_hospitalizations
+    description: "One row per inpatient encounter for a COVID patient."
+    columns:
+      - name: encounter_id
+        tests:
+          - unique
+          - not_null
+      - name: covid_status
+        tests:
+          - accepted_values:
+              values: ['confirmed', 'suspected']
