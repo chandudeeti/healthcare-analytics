@@ -6,6 +6,7 @@ with observations as (
         observation_description,
         observation_value
     from {{ ref('stg_observations') }}
+    where encounter_id is not null
 
 ),
 
