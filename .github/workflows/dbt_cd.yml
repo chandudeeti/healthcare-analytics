@@ -1,0 +1,57 @@
+name: dbt CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  dbt-deploy-prod:
+    runs-on: ubuntu-latest
+
+    env:
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+      SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+      SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+      SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dbt
+        run: pip install dbt-core dbt-snowflake
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat << EOF > ~/.dbt/profiles.yml
+          healthcare_analytics:
+            outputs:
+              prod:
+                type: snowflake
+                account: "$SNOWFLAKE_ACCOUNT"
+                user: "$SNOWFLAKE_USER"
+                password: "$SNOWFLAKE_PASSWORD"
+                role: "$SNOWFLAKE_ROLE"
+                database: "$SNOWFLAKE_DATABASE"
+                warehouse: "$SNOWFLAKE_WAREHOUSE"
+                schema: "STAGING_PROD"
+                threads: 4
+            target: prod
+          EOF
+
+      - name: Install dbt packages
+        working-directory: healthcare_analytics
+        run: dbt deps
+
+      - name: Deploy to production
+        working-directory: healthcare_analytics
+        run: dbt build --target prod
